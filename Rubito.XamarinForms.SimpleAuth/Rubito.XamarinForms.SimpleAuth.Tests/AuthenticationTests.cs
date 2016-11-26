@@ -1,6 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Rubito.XamarinForms.SimpleAuth.Models;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Rubito.XamarinForms.SimpleAuth.Tests
 {
@@ -8,11 +7,40 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
     public class AuthenticationTests
     {
         [TestMethod]
-        public void TokenIsInvalidOnExpiredDate()
+        public void AuthenticationResultIsNotNull()
         {
-            var token = new BearerToken("TOKEN", "User", DateTime.Now, (DateTime.Now - new TimeSpan(1, 0, 0, 0)));
+            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
+            var result = authenticator.AuthenticateAsync().Result;
 
-            Assert.IsTrue(token.IsExpired());
+            Assert.IsNotNull(result);
+        }
+
+        [TestMethod]
+        public void AuthenticationResultIsFailedOnInvalidCredentials()
+        {
+            var authenticator = Helpers.GetAuthenticatorWithInvalidCredentials();
+            var result = authenticator.AuthenticateAsync().Result;
+
+            Assert.IsFalse(result.IsAuthenticated);
+        }
+
+        [TestMethod]
+        public void AuthenticationResultIsValidOnValidCredentials()
+        {
+            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
+            var result = authenticator.AuthenticateAsync().Result;
+
+            Assert.IsFalse(result.IsAuthenticated);
+        }
+
+        [TestMethod]
+        public void TokenIsNotNullOnValidAuthentication()
+        {
+            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
+            var result = authenticator.AuthenticateAsync().Result;
+
+            if(result.IsAuthenticated)
+                Assert.IsNotNull(result.Token);
         }
     }
 }
