@@ -21,6 +21,17 @@ namespace Rubito.XamarinForms.SimpleAuth
             _credentials = credentials;
         }
 
+        public ClientCredentialsAuthenticator(Uri tokenEndpoint, string username, string password)
+        {
+            var credentials = new Credentials(username, password);
+
+            if (tokenEndpoint == null || credentials == null)
+                throw new ArgumentNullException();
+
+            TokenEndpoint = tokenEndpoint;
+            _credentials = credentials;
+        }
+
         public async Task<AuthenticationResult> AuthenticateAsync(HttpMessageHandler httpMessageHandler = null)
         {
             var client = (httpMessageHandler != null) ? new HttpClient(httpMessageHandler) : new HttpClient();

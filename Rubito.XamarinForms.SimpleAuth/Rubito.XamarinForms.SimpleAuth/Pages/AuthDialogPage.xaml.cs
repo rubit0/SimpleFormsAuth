@@ -13,9 +13,9 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
         private readonly Uri _tokenEndpoint;
         private readonly HttpMessageHandler _httpMessageHandler;
         private readonly AuthenticationBehaviour _behaviour;
-        private Action<BearerToken> _resultcallback;
+        private Action<AuthenticationResult> _resultcallback;
 
-        public AuthDialogPage(Uri tokenEndpoint, Action<BearerToken> resultCallback, HttpMessageHandler httpMessageHandler = null)
+        public AuthDialogPage(Uri tokenEndpoint, Action<AuthenticationResult> resultCallback, HttpMessageHandler httpMessageHandler = null)
         {
             if (tokenEndpoint == null || resultCallback == null)
                 throw new ArgumentNullException();
@@ -34,7 +34,7 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
 
         private async void OnCancelClicked(object sender, EventArgs e)
         {
-            _resultcallback.Invoke(null);
+            _resultcallback.Invoke(new AuthenticationResult(false, "User closed dialog."));
             await Navigation.PopModalAsync();
         }
 
@@ -62,7 +62,7 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
                 if (InputRememberMe.IsToggled)
                     AuthPersistence.StoreUsername(result.Token.UserName);
 
-                _resultcallback.Invoke(result.Token);
+                _resultcallback.Invoke(result);
 
                 await Navigation.PopModalAsync();
             }
