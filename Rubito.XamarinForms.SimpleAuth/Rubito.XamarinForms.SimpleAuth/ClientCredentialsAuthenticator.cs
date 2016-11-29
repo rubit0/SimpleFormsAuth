@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Rubito.XamarinForms.SimpleAuth.Pages;
 using Xamarin.Auth;
+using Xamarin.Forms;
 using Xamarin.Utilities;
 
 namespace Rubito.XamarinForms.SimpleAuth
@@ -13,7 +15,7 @@ namespace Rubito.XamarinForms.SimpleAuth
     public class ClientCredentialsAuthenticator : FormAuthenticator
     {
         bool _usernameIsEmail;
-        Credentials _credentials;
+        string _scope;
         Uri _accessTokenUrl;
 
         Uri AccessTokenUrl
@@ -21,44 +23,44 @@ namespace Rubito.XamarinForms.SimpleAuth
             get { return this._accessTokenUrl; }
         }
 
-        public ClientCredentialsAuthenticator(Uri accessTokenUrl, Credentials credentials) : base(accessTokenUrl)
+        public ClientCredentialsAuthenticator(Uri accessTokenUrl, Uri createAccountLink = null, string scope = null) : base(createAccountLink)
         {
             if (accessTokenUrl == null)
                 throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
 
-            if (credentials == null)
-                throw new ArgumentNullException(nameof(credentials), "credentials must be provided");
-
+            this._scope = scope;
             this.InitializeFormFields();
             this._accessTokenUrl = accessTokenUrl;
-            this._credentials = credentials;
-        }
-
-        public ClientCredentialsAuthenticator(Uri accessTokenUrl, string username, string password)
-        {
-            if (accessTokenUrl == null)
-                throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
-
-            if (string.IsNullOrEmpty(username))
-                throw new ArgumentNullException(nameof(username), "an username must be provided");
-
-            if (string.IsNullOrEmpty(password))
-                throw new ArgumentNullException(nameof(password), "an password must be provided");
-
-            this.InitializeFormFields();
-            this._accessTokenUrl = accessTokenUrl;
-            this._credentials = new Credentials(username, password);
         }
 
         public override async Task<Account> SignInAsync(CancellationToken cancellationToken)
         {
-            var result = await AuthenticateAsync();
-            return new Account(result["user"], result);
+            var result = await RequestAccessTokenAsync();
+
+            if (result == null)
+                OnError("Server response contained invalid data.");
+
+            if (result.ContainsKey("error"))
+                OnError(result["error"]);
+
+            if (result.ContainsKey("access_token"))
+            {
+                var account = new Account(result["user"], result);
+                OnSucceeded(account);
+                return account;
+            }
+            
+            return null;
         }
 
-        protected async Task<IDictionary<string, string>> AuthenticateAsync()
+        public virtual ContentPage GetFormsUI()
         {
-            var query = _credentials.ToFormUrlEncodedContent();
+            return new AuthDialogPage(this);
+        }
+
+        protected async Task<IDictionary<string, string>> RequestAccessTokenAsync()
+        {
+            var query = FieldsToFormUrlEncodedContent();
             var client = new HttpClient(new NativeMessageHandler());
 
             using (client)
@@ -69,18 +71,16 @@ namespace Rubito.XamarinForms.SimpleAuth
                     ? WebEx.JsonDecode(contentStream)
                     : WebEx.FormDecode(contentStream);
 
-                if (data.ContainsKey("error"))
-                    throw new AuthException($"Error authenticating: {data["error"]}");
-                else if (data.ContainsKey("access_token"))
+                if (data.ContainsKey("access_token") || data.ContainsKey("error"))
                     return data;
-                else
-                    throw new AuthException("Expected an access_token in the response.");
+
+                throw new AuthException("Expected an access_token or error message in the response.");
             }
         }
 
         protected void InitializeFormFields()
         {
-            FormAuthenticatorField username = new FormAuthenticatorField
+            var username = new FormAuthenticatorField
             {
                 FieldType = (_usernameIsEmail)
                     ? FormAuthenticatorFieldType.Email
@@ -90,7 +90,7 @@ namespace Rubito.XamarinForms.SimpleAuth
                 Placeholder = "Username"
             };
 
-            FormAuthenticatorField password = new FormAuthenticatorField
+            var password = new FormAuthenticatorField
             {
                 FieldType = FormAuthenticatorFieldType.Password,
                 Key = "password",
@@ -100,6 +100,18 @@ namespace Rubito.XamarinForms.SimpleAuth
 
             Fields.Add(username);
             Fields.Add(password);
+        }
+
+        protected virtual FormUrlEncodedContent FieldsToFormUrlEncodedContent()
+        {
+            var credentialsEncoded = new Dictionary<string, string>
+            {
+                {"grant_type", "password"},
+                {"username", GetFieldValue("username")},
+                {"password", GetFieldValue("password")}
+            };
+
+            return new FormUrlEncodedContent(credentialsEncoded);
         }
     }
 }

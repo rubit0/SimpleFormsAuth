@@ -1,21 +1,16 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Net.Http.Headers;
 
 namespace Rubito.XamarinForms.SimpleAuth.Models
 {
     public class BearerToken
     {
-        [JsonProperty("access_token")]
         public string AccessToken { get; private set; }
 
-        [JsonProperty("userName")]
         public string UserName { get; private set; }
 
-        [JsonProperty(".issued")]
         public DateTime Issued { get; private set; }
 
-        [JsonProperty(".expires")]
         public DateTime Expires { get; private set; }
 
         public BearerToken(string accessToken, string userName, DateTime issued, DateTime expires)

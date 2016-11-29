@@ -33,14 +33,14 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
             return new Credentials(Username, "456");
         }
 
-        public static ClientCredentialsAuthenticator GetAuthenticatorWithValidCredentials()
-        {
-            return new ClientCredentialsAuthenticator(new Uri(TokenEndpoint), GetValidCredentials());
-        }
+        //public static ClientCredentialsAuthenticator GetAuthenticatorWithValidCredentials()
+        //{
+        //    return new ClientCredentialsAuthenticator(new Uri(TokenEndpoint), GetValidCredentials());
+        //}
 
-        public static ClientCredentialsAuthenticator GetAuthenticatorWithInvalidCredentials()
-        {
-            return new ClientCredentialsAuthenticator(new Uri(TokenEndpoint), GetInvalidCredentials());
-        }
+        //public static ClientCredentialsAuthenticator GetAuthenticatorWithInvalidCredentials()
+        //{
+        //    return new ClientCredentialsAuthenticator(new Uri(TokenEndpoint), GetInvalidCredentials());
+        //}
     }
 }

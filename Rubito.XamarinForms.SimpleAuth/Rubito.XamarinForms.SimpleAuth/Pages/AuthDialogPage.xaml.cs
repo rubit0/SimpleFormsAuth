@@ -1,100 +1,109 @@
 ﻿using Rubito.XamarinForms.SimpleAuth.Behaviours;
-using Rubito.XamarinForms.SimpleAuth.Models;
 using Rubito.XamarinForms.SimpleAuth.Tools;
 using System;
-using System.Net.Http;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using Xamarin.Auth;
 using Xamarin.Forms;
 
 namespace Rubito.XamarinForms.SimpleAuth.Pages
 {
     public partial class AuthDialogPage : ContentPage
     {
-        private readonly Uri _tokenEndpoint;
-        private readonly HttpMessageHandler _httpMessageHandler;
+        //private readonly Uri _tokenEndpoint;
+        //private readonly HttpMessageHandler _httpMessageHandler;
         private readonly AuthenticationBehaviour _behaviour;
-        private Action<AuthenticationResult> _resultcallback;
+        //private Action<AuthenticationResult> _resultcallback;
+        private ClientCredentialsAuthenticator _authenticator;
 
-        public AuthDialogPage(Uri tokenEndpoint, Action<AuthenticationResult> resultCallback, HttpMessageHandler httpMessageHandler = null)
+        public AuthDialogPage(ClientCredentialsAuthenticator authenticator)
         {
-            if (tokenEndpoint == null || resultCallback == null)
-                throw new ArgumentNullException();
+            if (authenticator == null)
+                throw new ArgumentNullException(nameof(authenticator), "You must provide an anthenticator");
 
-            _tokenEndpoint = tokenEndpoint;
-            _resultcallback += resultCallback;
-            _httpMessageHandler = httpMessageHandler;
+            _authenticator = authenticator;
+            _authenticator.Completed += AuthenticatorOnCompleted;
+            _authenticator.Error += AuthenticatorOnError;
 
             InitializeComponent();
 
-            Device.OnPlatform(iOS: () => HeroIcon.TranslationY -= 24);
+            //TODO Loading User from Store
+            //TODO Use fields to build entries
 
-            LoadUser();
+            Device.OnPlatform(iOS: () => HeroIcon.TranslationY -= 24);
             _behaviour = ControllerBag.GetBehaviour<AuthenticationBehaviour>();
         }
 
-        private async void OnCancelClicked(object sender, EventArgs e)
+        protected override void OnDisappearing()
         {
-            _resultcallback.Invoke(new AuthenticationResult(false, "User closed dialog."));
-            await Navigation.PopModalAsync();
+            _authenticator.Completed -= AuthenticatorOnCompleted;
+            _authenticator.Error -= AuthenticatorOnError;
+
+            base.OnDisappearing();
         }
 
-        private async void OnSubmitClicked(object sender, EventArgs e)
+        private async void AuthenticatorOnError(object sender, AuthenticatorErrorEventArgs eventArgs)
         {
-            var credentials = new Credentials(InputEmail.Text, InputPassword.Text);
-            var credentialValidation = credentials.Validate();
-            if (!credentialValidation.IsValid)
-            {
-                await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail,
-                    credentialValidation.GetFormatedErrors());
+            await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, eventArgs.Message);
+        }
 
-                return;
-            }
-
-            await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Start);
-
-            var authenticator = new ClientCredentialsAuthenticator(_tokenEndpoint, credentials);
-            var result = await authenticator.AuthenticateAsync(_httpMessageHandler);
-            if (result.IsAuthenticated)
+        private async void AuthenticatorOnCompleted(object sender, AuthenticatorCompletedEventArgs eventArgs)
+        {
+            if (eventArgs.IsAuthenticated)
             {
                 await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Success);
                 await Task.Delay(1500);
 
                 if (InputRememberMe.IsToggled)
-                    AuthPersistence.StoreUsername(result.Token.UserName);
+                    //TODO Implement saving
 
-                _resultcallback.Invoke(result);
+                    //TODO Implament event that modal has finished displaying
 
-                await Navigation.PopModalAsync();
+                    await Navigation.PopModalAsync();
             }
-            else
-            {
-                await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, result.Message);
-            }
+        }
+
+        private async void OnSubmitClicked(object sender, EventArgs e)
+        {
+            await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Start);
+
+            //TODO Implement input validation
+
+            _authenticator.Fields.Single(f => f.Value == "username").Value = InputEmail.Text;
+            _authenticator.Fields.Single(f => f.Value == "password").Value = InputPassword.Text;
+
+            await _authenticator.SignInAsync(new CancellationToken());
+        }
+
+        private async void OnCancelClicked(object sender, EventArgs e)
+        {
+            _authenticator.OnError("User closed page.");
+            await Navigation.PopModalAsync();
         }
 
         protected override bool OnBackButtonPressed()
         {
             OnCancelClicked(this, EventArgs.Empty);
-
             return base.OnBackButtonPressed();
         }
 
-        private void LoadUser()
-        {
-            var username = AuthPersistence.LoadUsername();
-            if (!string.IsNullOrEmpty(username))
-            {
-                InputEmail.Text = username;
-                InputRememberMe.IsToggled = true;
-            }
+        //private void LoadUser()
+        //{
+        //    var username = AuthPersistence.LoadUsername();
+        //    if (!string.IsNullOrEmpty(username))
+        //    {
+        //        InputEmail.Text = username;
+        //        InputRememberMe.IsToggled = true;
+        //    }
 
-            var password = AuthPersistence.LoadPassword();
-            if (!string.IsNullOrEmpty(password))
-            {
-                InputPassword.Text = password;
-                InputSavePassword.IsToggled = true;
-            }
-        }
+        //    var password = AuthPersistence.LoadPassword();
+        //    if (!string.IsNullOrEmpty(password))
+        //    {
+        //        InputPassword.Text = password;
+        //        InputSavePassword.IsToggled = true;
+        //    }
+        //}
 
         private async void OnStorePasswordToggled(object sender, ToggledEventArgs e)
         {
