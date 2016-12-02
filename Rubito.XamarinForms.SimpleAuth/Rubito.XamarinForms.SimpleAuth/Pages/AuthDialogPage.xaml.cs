@@ -15,9 +15,9 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
         //private readonly HttpMessageHandler _httpMessageHandler;
         private readonly AuthenticationBehaviour _behaviour;
         //private Action<AuthenticationResult> _resultcallback;
-        private ClientCredentialsAuthenticator _authenticator;
+        private OAuth2PasswordCredentialsAuthenticator _authenticator;
 
-        public AuthDialogPage(ClientCredentialsAuthenticator authenticator)
+        public AuthDialogPage(OAuth2PasswordCredentialsAuthenticator authenticator)
         {
             if (authenticator == null)
                 throw new ArgumentNullException(nameof(authenticator), "You must provide an anthenticator");
