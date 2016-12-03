@@ -60,8 +60,10 @@ namespace Rubito.XamarinForms.SimpleAuth.Behaviours
                 case AuthState.Beginn:
                     await _topGroupBehaviour.SwitchStateToDefault();
                     LoginButton.IsEnabled = true;
+                    LoginButton.Text = "Log in";
                     break;
                 case AuthState.Start:
+                    LoginButton.Text = "Working...";
                     LoginButton.IsEnabled = false;
                     LoadingIndicator.IsRunning = true;
                     await _topGroupBehaviour.SwitchStateToBusy();
@@ -71,6 +73,7 @@ namespace Rubito.XamarinForms.SimpleAuth.Behaviours
                     await _topGroupBehaviour.SwitchStateToDefault();
                     await InvalidInputAnimation();
                     LoginButton.IsEnabled = true;
+                    LoginButton.Text = "Log in";
                     break;
                 case AuthState.Success:
                     ErrorMessage.IsVisible = false;

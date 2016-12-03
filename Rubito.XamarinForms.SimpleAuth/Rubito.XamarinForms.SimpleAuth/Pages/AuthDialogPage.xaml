@@ -28,7 +28,7 @@
         ElementName=Top, 
         Factor=0.5, 
         Constant=-18}" />
-      <Image x:Name="CloseIcon" WidthRequest="36" HeightRequest="36"
+      <Image x:Name="CloseIcon" WidthRequest="32" HeightRequest="32" MinimumWidthRequest="18" MinimumHeightRequest="18"
              RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Height,
@@ -36,7 +36,7 @@
              RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Width,
-             Factor=0.03}">
+             Factor=0.05}">
         <Image.GestureRecognizers>
           <TapGestureRecognizer Tapped="OnCancelClicked" />
         </Image.GestureRecognizers>
@@ -96,37 +96,19 @@
           RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}">
         <Label x:Name="ErrorMessage" IsVisible="False" TextColor="#FF3939" Text="Wrong username or password" />
 
-        <Entry x:Name="InputEmail" Keyboard="Email" Placeholder="Username or Email">
-          <Entry.Behaviors>
-            <behaviours:InputFormatterBehaviour/>
-          </Entry.Behaviors>
-        </Entry>
-        <Entry x:Name="InputPassword" IsPassword="True" Placeholder="Password">
-          <Entry.Behaviors>
-            <behaviours:InputFormatterBehaviour/>
-          </Entry.Behaviors>
-        </Entry>
+        <StackLayout x:Name="InputEntryContainer" />
 
-        <StackLayout Padding="0, 15, 0, 0" Orientation="Horizontal">
-          <ContentView VerticalOptions="Center" WidthRequest="120">
-            <Label Text="Remember me" />
-          </ContentView>
-          <Switch x:Name="InputRememberMe" HorizontalOptions="EndAndExpand" IsToggled="True"
-                  Toggled="OnRememberMeToggled" />
-        </StackLayout>
-        <StackLayout Padding="0, 3, 0, 0" Orientation="Horizontal">
-          <ContentView VerticalOptions="Center" WidthRequest="120">
-            <Label Text="Save password" />
-          </ContentView>
-          <Switch x:Name="InputSavePassword" HorizontalOptions="EndAndExpand"
-                  Toggled="OnStorePasswordToggled" />
-        </StackLayout>
         <ContentView Padding="0, 40, 0, 10">
           <Button x:Name="LoginButton" WidthRequest="120" Clicked="OnSubmitClicked" BackgroundColor="#F5F87A"
-                  Text="Sign in" />
+                  Text="Log in" />
         </ContentView>
+        <!--<ContentView Padding="0, 0, 0, 5">
+          <Button x:Name="RegisterButton" WidthRequest="120" Clicked="OnSubmitClicked" BackgroundColor="#FC89D3"
+                  Text="Sign up" />
+        </ContentView>-->
         <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" />
-      </StackLayout>
+      
+    </StackLayout>
     </RelativeLayout>
 
     <ContentView x:Name="ControllerBag">

@@ -1,7 +1,7 @@
 ﻿using Rubito.XamarinForms.SimpleAuth.Behaviours;
 using Rubito.XamarinForms.SimpleAuth.Tools;
 using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Xamarin.Auth;
@@ -11,11 +11,10 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
 {
     public partial class AuthDialogPage : ContentPage
     {
-        //private readonly Uri _tokenEndpoint;
-        //private readonly HttpMessageHandler _httpMessageHandler;
-        private readonly AuthenticationBehaviour _behaviour;
-        //private Action<AuthenticationResult> _resultcallback;
-        private OAuth2PasswordCredentialsAuthenticator _authenticator;
+        AuthenticationBehaviour _behaviour;
+        OAuth2PasswordCredentialsAuthenticator _authenticator;
+        Dictionary<FormAuthenticatorField, Entry> _fieldToEntryPairs;
+        CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
 
         public AuthDialogPage(OAuth2PasswordCredentialsAuthenticator authenticator)
         {
@@ -27,9 +26,9 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
             _authenticator.Error += AuthenticatorOnError;
 
             InitializeComponent();
+            AuthFieldsToEntries();
 
-            //TODO Loading User from Store
-            //TODO Use fields to build entries
+            //TODO Add Register button
 
             Device.OnPlatform(iOS: () => HeroIcon.TranslationY -= 24);
             _behaviour = ControllerBag.GetBehaviour<AuthenticationBehaviour>();
@@ -37,6 +36,7 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
 
         protected override void OnDisappearing()
         {
+            _cancellationTokenSource.Cancel();
             _authenticator.Completed -= AuthenticatorOnCompleted;
             _authenticator.Error -= AuthenticatorOnError;
 
@@ -55,12 +55,7 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
                 await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Success);
                 await Task.Delay(1500);
 
-                if (InputRememberMe.IsToggled)
-                    //TODO Implement saving
-
-                    //TODO Implament event that modal has finished displaying
-
-                    await Navigation.PopModalAsync();
+                await Navigation.PopModalAsync();
             }
         }
 
@@ -70,10 +65,18 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
 
             //TODO Implement input validation
 
-            _authenticator.Fields.Single(f => f.Value == "username").Value = InputEmail.Text;
-            _authenticator.Fields.Single(f => f.Value == "password").Value = InputPassword.Text;
+            foreach (var pair in _fieldToEntryPairs)
+                pair.Key.Value = pair.Value.Text;
 
-            await _authenticator.SignInAsync(new CancellationToken());
+            try
+            {
+                var account = await _authenticator.SignInAsync(new CancellationToken());
+            }
+            catch (Exception ex)
+            {
+
+                await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, ex.Message);
+            }
         }
 
         private async void OnCancelClicked(object sender, EventArgs e)
@@ -88,43 +91,56 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
             return base.OnBackButtonPressed();
         }
 
-        //private void LoadUser()
-        //{
-        //    var username = AuthPersistence.LoadUsername();
-        //    if (!string.IsNullOrEmpty(username))
-        //    {
-        //        InputEmail.Text = username;
-        //        InputRememberMe.IsToggled = true;
-        //    }
+        protected virtual void AuthFieldsToEntries()
+        {
+            if (_fieldToEntryPairs == null)
+                _fieldToEntryPairs = new Dictionary<FormAuthenticatorField, Entry>();
 
-        //    var password = AuthPersistence.LoadPassword();
-        //    if (!string.IsNullOrEmpty(password))
-        //    {
-        //        InputPassword.Text = password;
-        //        InputSavePassword.IsToggled = true;
-        //    }
-        //}
+            var fields = _authenticator.Fields;
+
+            foreach (var field in fields)
+            {
+                var entry = new Entry
+                {
+                    Placeholder = field.Placeholder,
+                    Text = field.Value,
+                    Behaviors = { new InputFormatterBehaviour() }
+                };
+
+                switch (field.FieldType)
+                {
+                    case FormAuthenticatorFieldType.PlainText:
+                        entry.Keyboard = Keyboard.Text;
+                        break;
+                    case FormAuthenticatorFieldType.Email:
+                        entry.Keyboard = Keyboard.Email;
+                        break;
+                    case FormAuthenticatorFieldType.Password:
+                        entry.IsPassword = true;
+                        entry.Keyboard = Keyboard.Text;
+                        break;
+                    default:
+                        entry.Keyboard = Keyboard.Text;
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                _fieldToEntryPairs.Add(field, entry);
+
+                InputEntryContainer.Children.Add(entry);
+            }
+        }
 
         private async void OnStorePasswordToggled(object sender, ToggledEventArgs e)
         {
             var swith = sender as Switch;
             if (swith != null && swith.IsToggled)
-            {
                 await DisplayAlert("Security warning", "It is not advised to save the password on your device.", "Ok");
-                AuthPersistence.StorePassword(InputPassword.Text);
-            }
-            else
-            {
-                AuthPersistence.DeletePassword();
-            }
         }
 
         private void OnRememberMeToggled(object sender, ToggledEventArgs e)
         {
             if (e.Value)
                 return;
-
-            AuthPersistence.DeleteUsername();
         }
     }
 }

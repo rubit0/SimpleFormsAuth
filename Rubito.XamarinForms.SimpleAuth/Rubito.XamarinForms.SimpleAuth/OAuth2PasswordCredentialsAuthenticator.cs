@@ -1,14 +1,13 @@
 ﻿using ModernHttpClient;
+using Rubito.XamarinForms.SimpleAuth.Pages;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Rubito.XamarinForms.SimpleAuth.Pages;
 using Xamarin.Auth;
 using Xamarin.Forms;
 using Xamarin.Utilities;
-using System.Linq;
 
 namespace Rubito.XamarinForms.SimpleAuth
 {
@@ -24,13 +23,21 @@ namespace Rubito.XamarinForms.SimpleAuth
 
         public OAuth2PasswordCredentialsAuthenticator(Uri accessTokenUrl, Uri createAccountLink = null, string scope = null) : base(createAccountLink)
         {
-            this._accessTokenUrl = accessTokenUrl ?? throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
+            if (accessTokenUrl == null)
+                throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
+
+            this._accessTokenUrl = accessTokenUrl;
             this._scope = scope;
+
+            InitializeFormFields();
         }
 
         public OAuth2PasswordCredentialsAuthenticator(Uri accessTokenUrl, string username, string password, Uri createAccountLink = null, string scope = null) : base(createAccountLink)
         {
-            this._accessTokenUrl = accessTokenUrl ?? throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
+            if (accessTokenUrl == null)
+                throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
+
+            this._accessTokenUrl = accessTokenUrl;
             this._scope = scope;
 
             InitializeFormFields(username, password);
@@ -38,17 +45,17 @@ namespace Rubito.XamarinForms.SimpleAuth
 
         public virtual void InitializeFormFields(string username = "", string password = "", bool isEmail = false)
         {
-            if(string.IsNullOrEmpty(GetFieldValue("username")))
+            if (string.IsNullOrEmpty(GetFieldValue("username")))
             {
                 var usernameField = new FormAuthenticatorField
                 {
                     FieldType = (isEmail)
-                    ? FormAuthenticatorFieldType.Email
-                    : FormAuthenticatorFieldType.PlainText,
+                        ? FormAuthenticatorFieldType.Email
+                        : FormAuthenticatorFieldType.PlainText,
                     Key = "username",
                     Title = (isEmail)
-                    ? "Email"
-                    : "Username",
+                        ? "Email"
+                        : "Username",
                     Placeholder = "Username",
                     Value = username
                 };
@@ -84,7 +91,7 @@ namespace Rubito.XamarinForms.SimpleAuth
                 var result = await RequestAccessTokenAsync(cancellationToken);
 
                 if (result.ContainsKey("error"))
-                    OnError(result["error"]);
+                    OnError(result["error_description"]);
 
                 if (result.ContainsKey("access_token"))
                 {
@@ -93,9 +100,9 @@ namespace Rubito.XamarinForms.SimpleAuth
                     return account;
                 }
             }
-            catch(TaskCanceledException ex)
+            catch (TaskCanceledException ex)
             {
-                if(ex.CancellationToken == cancellationToken)
+                if (ex.CancellationToken == cancellationToken)
                     OnError("User aborted the sign-in process or possible time out");
 
                 return null;
@@ -105,7 +112,7 @@ namespace Rubito.XamarinForms.SimpleAuth
                 OnError(ex.Message);
                 return null;
             }
-            
+
             return null;
         }
 
@@ -123,7 +130,7 @@ namespace Rubito.XamarinForms.SimpleAuth
                 var response = await client.PostAsync(_accessTokenUrl, query, cancellationToken);
                 var contentStream = await response.Content.ReadAsStringAsync();
 
-                if(!response.IsSuccessStatusCode)
+                if (!response.IsSuccessStatusCode)
                 {
                     if (response.Content.Headers.ContentType.MediaType.Contains("html"))
                         throw new AuthException($"{response.StatusCode}: {response.ReasonPhrase}");
@@ -151,6 +158,9 @@ namespace Rubito.XamarinForms.SimpleAuth
                 {"username", GetFieldValue("username")},
                 {"password", GetFieldValue("password")}
             };
+
+            if (!string.IsNullOrEmpty(_scope))
+                credentialsEncoded.Add("scope", _scope);
 
             return new FormUrlEncodedContent(credentialsEncoded);
         }

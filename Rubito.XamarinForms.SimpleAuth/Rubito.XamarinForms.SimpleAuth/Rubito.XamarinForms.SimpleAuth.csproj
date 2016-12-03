@@ -39,15 +39,10 @@
     <Compile Include="Behaviours\InputFormatterBehaviour.cs" />
     <Compile Include="Behaviours\TopGroupBehaviour.cs" />
     <Compile Include="OAuth2PasswordCredentialsAuthenticator.cs" />
-    <Compile Include="Models\AuthenticationResult.cs" />
     <Compile Include="Pages\AuthDialogPage.xaml.cs">
       <DependentUpon>AuthDialogPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tools\AuthPersistence.cs" />
     <Compile Include="Tools\Extensions.cs" />
-    <Compile Include="Models\BearerToken.cs" />
-    <Compile Include="Models\Credentials.cs" />
-    <Compile Include="Models\CredentialsValidationResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -92,9 +87,15 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Assets\close_modal.png" />
-    <EmbeddedResource Include="Assets\header.png" />
-    <EmbeddedResource Include="Assets\verified.png" />
+    <EmbeddedResource Include="Assets\close_modal.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\header.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Assets\verified.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Pages\AuthDialogPage.xaml">
