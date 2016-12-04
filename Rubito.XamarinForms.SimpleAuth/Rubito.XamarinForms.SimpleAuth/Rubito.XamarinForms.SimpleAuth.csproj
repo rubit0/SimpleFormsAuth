@@ -36,7 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Behaviours\AuthenticationBehaviour.cs" />
-    <Compile Include="Behaviours\InputFormatterBehaviour.cs" />
+    <Compile Include="Behaviours\EntrySanityBehaviour.cs" />
     <Compile Include="Behaviours\TopGroupBehaviour.cs" />
     <Compile Include="OAuth2PasswordCredentialsAuthenticator.cs" />
     <Compile Include="Pages\AuthDialogPage.xaml.cs">

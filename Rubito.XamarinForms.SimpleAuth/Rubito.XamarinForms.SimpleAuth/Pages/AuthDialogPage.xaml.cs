@@ -13,8 +13,9 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
     {
         AuthenticationBehaviour _behaviour;
         OAuth2PasswordCredentialsAuthenticator _authenticator;
-        Dictionary<FormAuthenticatorField, Entry> _fieldToEntryPairs;
+        Dictionary<FormAuthenticatorField, Entry> _fieldToEntryPairs = new Dictionary<FormAuthenticatorField, Entry>();
         CancellationTokenSource _cancellationTokenSource = new CancellationTokenSource();
+        List<IEntryValidator> _entryValidators = new List<IEntryValidator>();
 
         public AuthDialogPage(OAuth2PasswordCredentialsAuthenticator authenticator)
         {
@@ -43,34 +44,19 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
             base.OnDisappearing();
         }
 
-        private async void AuthenticatorOnError(object sender, AuthenticatorErrorEventArgs eventArgs)
-        {
-            await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, eventArgs.Message);
-        }
-
-        private async void AuthenticatorOnCompleted(object sender, AuthenticatorCompletedEventArgs eventArgs)
-        {
-            if (eventArgs.IsAuthenticated)
-            {
-                await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Success);
-                await Task.Delay(1500);
-
-                await Navigation.PopModalAsync();
-            }
-        }
-
         private async void OnSubmitClicked(object sender, EventArgs e)
         {
             await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Start);
 
-            //TODO Implement input validation
-
             foreach (var pair in _fieldToEntryPairs)
                 pair.Key.Value = pair.Value.Text;
 
+            if (!await ValidateEntries())
+                return;
+
             try
             {
-                var account = await _authenticator.SignInAsync(new CancellationToken());
+                var account = await _authenticator.SignInAsync(_cancellationTokenSource.Token);
             }
             catch (Exception ex)
             {
@@ -85,17 +71,47 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
             await Navigation.PopModalAsync();
         }
 
+        private async Task<bool> ValidateEntries()
+        {
+            foreach (var entryValidator in _entryValidators)
+            {
+                var validation = entryValidator.Validate();
+
+                if (!validation.Item1)
+                {
+                    await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, validation.Item2);
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private async void AuthenticatorOnCompleted(object sender, AuthenticatorCompletedEventArgs eventArgs)
+        {
+            if (eventArgs.IsAuthenticated)
+            {
+                eventArgs.Account.Properties.Add("RememberMe", InputRememberMe.IsToggled.ToString());
+                await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Success);
+                await Task.Delay(1500);
+
+                await Navigation.PopModalAsync();
+            }
+        }
+
         protected override bool OnBackButtonPressed()
         {
             OnCancelClicked(this, EventArgs.Empty);
             return base.OnBackButtonPressed();
         }
 
+        private async void AuthenticatorOnError(object sender, AuthenticatorErrorEventArgs eventArgs)
+        {
+            await _behaviour.SwitchAuthState(AuthenticationBehaviour.AuthState.Fail, eventArgs.Message);
+        }
+
         protected virtual void AuthFieldsToEntries()
         {
-            if (_fieldToEntryPairs == null)
-                _fieldToEntryPairs = new Dictionary<FormAuthenticatorField, Entry>();
-
             var fields = _authenticator.Fields;
 
             foreach (var field in fields)
@@ -104,8 +120,11 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
                 {
                     Placeholder = field.Placeholder,
                     Text = field.Value,
-                    Behaviors = { new InputFormatterBehaviour() }
                 };
+
+                var behaviour = new EntrySanityBehaviour { DoRemoveWhiteSpace = true };
+                _entryValidators.Add(behaviour);
+                entry.Behaviors.Add(behaviour);
 
                 switch (field.FieldType)
                 {
@@ -114,33 +133,23 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
                         break;
                     case FormAuthenticatorFieldType.Email:
                         entry.Keyboard = Keyboard.Email;
+                        behaviour.CheckIsEmail = true;
+                        _entryValidators.Add(behaviour);
                         break;
                     case FormAuthenticatorFieldType.Password:
                         entry.IsPassword = true;
                         entry.Keyboard = Keyboard.Text;
+                        behaviour.MinCharLength = 6;
                         break;
                     default:
                         entry.Keyboard = Keyboard.Text;
-                        throw new ArgumentOutOfRangeException();
+                        break;
                 }
 
                 _fieldToEntryPairs.Add(field, entry);
 
                 InputEntryContainer.Children.Add(entry);
             }
-        }
-
-        private async void OnStorePasswordToggled(object sender, ToggledEventArgs e)
-        {
-            var swith = sender as Switch;
-            if (swith != null && swith.IsToggled)
-                await DisplayAlert("Security warning", "It is not advised to save the password on your device.", "Ok");
-        }
-
-        private void OnRememberMeToggled(object sender, ToggledEventArgs e)
-        {
-            if (e.Value)
-                return;
         }
     }
 }

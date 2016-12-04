@@ -2,6 +2,7 @@
 using Rubito.XamarinForms.SimpleAuth.Pages;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -21,6 +22,12 @@ namespace Rubito.XamarinForms.SimpleAuth
             get { return this._accessTokenUrl; }
         }
 
+        /// <summary>
+        /// Create a new authenticator instance, you need to provide a link to the token endpoint.
+        /// </summary>
+        /// <param name="accessTokenUrl">Request endpoint to retrieve a bearer token</param>
+        /// <param name="createAccountLink">Link for creating an account. Currently ignored.</param>
+        /// <param name="scope">Optional scope for the token request</param>
         public OAuth2PasswordCredentialsAuthenticator(Uri accessTokenUrl, Uri createAccountLink = null, string scope = null) : base(createAccountLink)
         {
             if (accessTokenUrl == null)
@@ -32,52 +39,83 @@ namespace Rubito.XamarinForms.SimpleAuth
             InitializeFormFields();
         }
 
-        public OAuth2PasswordCredentialsAuthenticator(Uri accessTokenUrl, string username, string password, Uri createAccountLink = null, string scope = null) : base(createAccountLink)
+        /// <summary>
+        /// Set credentials for this authenticator and underlying dialog page.
+        /// </summary>
+        /// <param name="username">Set a username, eg. load from an Account if you have one</param>
+        /// <param name="password">Password sent along the username</param>
+        /// <param name="isEmail">Set the username to be treated and validates as an email address.</param>
+        public virtual void SetCredentials(string username = "", string password = "", bool isEmail = false)
         {
-            if (accessTokenUrl == null)
-                throw new ArgumentNullException(nameof(accessTokenUrl), "an accessTokenUrl must be provided");
+            var userField = Fields.SingleOrDefault(f => f.Key == "username");
+            var passwordField = Fields.SingleOrDefault(f => f.Key == "password");
 
-            this._accessTokenUrl = accessTokenUrl;
-            this._scope = scope;
-
-            InitializeFormFields(username, password);
-        }
-
-        public virtual void InitializeFormFields(string username = "", string password = "", bool isEmail = false)
-        {
-            if (string.IsNullOrEmpty(GetFieldValue("username")))
+            if (userField != null)
             {
-                var usernameField = new FormAuthenticatorField
-                {
-                    FieldType = (isEmail)
-                        ? FormAuthenticatorFieldType.Email
-                        : FormAuthenticatorFieldType.PlainText,
-                    Key = "username",
-                    Title = (isEmail)
-                        ? "Email"
-                        : "Username",
-                    Placeholder = "Username",
-                    Value = username
-                };
+                if (!string.IsNullOrEmpty(username))
+                    userField.Value = username;
 
-                Fields.Add(usernameField);
+                userField.FieldType = (isEmail)
+                    ? FormAuthenticatorFieldType.Email
+                    : FormAuthenticatorFieldType.PlainText;
+
+                userField.Title = (isEmail)
+                    ? "Email"
+                    : "Username";
+                userField.Placeholder = (isEmail)
+                    ? "Email"
+                    : "Username";
             }
 
-            if (string.IsNullOrEmpty(GetFieldValue("password")))
+            if (passwordField != null)
             {
-                var passwordField = new FormAuthenticatorField
+                passwordField.Value = password;
+            }
+            else if (!string.IsNullOrEmpty(password))
+            {
+                passwordField.Value = password;
+            }
+        }
+
+        protected virtual void InitializeFormFields()
+        {
+            var userField = Fields.SingleOrDefault(f => f.Key == "username");
+            var passwordField = Fields.SingleOrDefault(f => f.Key == "password");
+
+            if (userField == null)
+            {
+                userField = new FormAuthenticatorField
+                {
+                    FieldType = FormAuthenticatorFieldType.PlainText,
+                    Key = "username",
+                    Title = "Username",
+                    Placeholder = "Username",
+                    Value = ""
+                };
+
+                Fields.Add(userField);
+            }
+
+            if (passwordField == null)
+            {
+                passwordField = new FormAuthenticatorField
                 {
                     FieldType = FormAuthenticatorFieldType.Password,
                     Key = "password",
                     Title = "Password",
                     Placeholder = "Password",
-                    Value = password
+                    Value = ""
                 };
 
                 Fields.Add(passwordField);
             }
         }
 
+        /// <summary>
+        /// Start authentication with the provided credentials.
+        /// </summary>
+        /// <param name="cancellationToken">Used to cancel the request.</param>
+        /// <returns>Get the Account to do wonderful things.</returns>
         public override async Task<Account> SignInAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             if (cancellationToken.IsCancellationRequested && AllowCancel)
@@ -116,6 +154,11 @@ namespace Rubito.XamarinForms.SimpleAuth
             return null;
         }
 
+        /// <summary>
+        /// Present this with love cradted page to your user as a modal page.
+        /// Please note that this page closes it-self on a successful authentication.
+        /// </summary>
+        /// <returns>The authentication dialog page.</returns>
         public virtual ContentPage GetFormsUI()
         {
             return new AuthDialogPage(this);

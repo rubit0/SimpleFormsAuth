@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Rubito.XamarinForms.SimpleAuth.Tests
 {
@@ -16,7 +16,8 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
         [TestMethod]
         public void BasicFailedAuthenticationFlow()
         {
-            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("http://www.google.com"), "Bob", "strongestpassword");
+            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("http://www.google.com"));
+            auth.SetCredentials("Bob", "strongedpassword");
             var errorFired = false;
 
             auth.Error += (obj, args) => errorFired = true;
@@ -34,10 +35,11 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
             var completeFired = false;
             var tokenEndpoint = new Uri("https://companistawebtesting.azurewebsites.net/Token");
 
-            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint, "Bill", "Abc_123");
+            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint);
+            auth.SetCredentials("Bill", "Abc_123");
             auth.Error += (obj, args) => Assert.Fail("Error should not be rised on success");
             auth.Completed += (obj, args) => completeFired = args.IsAuthenticated;
-            
+
 
             var account = auth.SignInAsync().Result;
 
@@ -51,7 +53,8 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
         public void AuthenticatorConstructorWithCredentialsGeneratesFields()
         {
             var tokenEndpoint = new Uri("https://companistawebtesting.azurewebsites.net/Token");
-            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint, "Bill", "Abc_123");
+            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint);
+            auth.SetCredentials("Bill", "Abc_123");
 
             Assert.IsTrue(auth.Fields.Count > 1);
         }
@@ -59,11 +62,14 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
         [TestMethod]
         public void ExceptionMessageIsNotNull()
         {
-            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("https://Google.com"), "Bill", "strongestpassword");
+            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("https://Google.com"));
+            auth.SetCredentials("Bill", "Abc_123");
+
             var completeFired = false;
             var message = string.Empty;
 
-            auth.Error += (obj, args) => {
+            auth.Error += (obj, args) =>
+            {
                 completeFired = true;
                 message = args.Message;
             };
