@@ -18,9 +18,9 @@ namespace Rubito.XamarinForms.SimpleAuth.Behaviours
 
         public TopGroupBehaviour()
         {
-            _closeIconImage = ImageSource.FromResource("Companista.Mobile.Services.Authentication.Assets.close_modal.png");
-            _heroImageDefault = ImageSource.FromResource("Companista.Mobile.Services.Authentication.Assets.header.png");
-            _heroImageSucces = ImageSource.FromResource("Companista.Mobile.Services.Authentication.Assets.verified.png");
+            _closeIconImage = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.close_modal.png");
+            _heroImageDefault = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.header.png");
+            _heroImageSucces = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.verified.png");
         }
 
         protected override void OnAttachedTo(View bindable)

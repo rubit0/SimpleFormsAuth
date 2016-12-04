@@ -1,5 +1,5 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System;
 
 namespace Rubito.XamarinForms.SimpleAuth.Tests
 {
@@ -7,40 +7,77 @@ namespace Rubito.XamarinForms.SimpleAuth.Tests
     public class AuthenticationTests
     {
         [TestMethod]
-        public void AuthenticationResultIsNotNull()
+        [ExpectedException(typeof(ArgumentNullException))]
+        public void ThrowsExeptionOnNullUri()
         {
-            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
-            var result = authenticator.AuthenticateAsync().Result;
-
-            Assert.IsNotNull(result);
+            var auth = new OAuth2PasswordCredentialsAuthenticator(null);
         }
 
         [TestMethod]
-        public void AuthenticationResultIsFailedOnInvalidCredentials()
+        public void BasicFailedAuthenticationFlow()
         {
-            var authenticator = Helpers.GetAuthenticatorWithInvalidCredentials();
-            var result = authenticator.AuthenticateAsync().Result;
+            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("http://www.google.com"));
+            auth.SetCredentials("Bob", "strongedpassword");
+            var errorFired = false;
 
-            Assert.IsFalse(result.IsAuthenticated);
+            auth.Error += (obj, args) => errorFired = true;
+            auth.Completed += (obj, args) => Assert.Fail("Complete should not be rised on failure");
+
+            var result = auth.SignInAsync().Result;
+
+            Assert.IsFalse(auth.HasCompleted);
+            Assert.IsTrue(errorFired);
         }
 
         [TestMethod]
-        public void AuthenticationResultIsValidOnValidCredentials()
+        public void BasicValidAuthenticationFlow()
         {
-            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
-            var result = authenticator.AuthenticateAsync().Result;
+            var completeFired = false;
+            var tokenEndpoint = new Uri("https://companistawebtesting.azurewebsites.net/Token");
 
-            Assert.IsFalse(result.IsAuthenticated);
+            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint);
+            auth.SetCredentials("Bill", "Abc_123");
+            auth.Error += (obj, args) => Assert.Fail("Error should not be rised on success");
+            auth.Completed += (obj, args) => completeFired = args.IsAuthenticated;
+
+
+            var account = auth.SignInAsync().Result;
+
+            Assert.AreEqual(tokenEndpoint, auth.AccessTokenUrl);
+            Assert.IsTrue(auth.HasCompleted);
+            Assert.IsTrue(completeFired);
+            Assert.IsNotNull(account);
         }
 
         [TestMethod]
-        public void TokenIsNotNullOnValidAuthentication()
+        public void AuthenticatorConstructorWithCredentialsGeneratesFields()
         {
-            var authenticator = Helpers.GetAuthenticatorWithValidCredentials();
-            var result = authenticator.AuthenticateAsync().Result;
+            var tokenEndpoint = new Uri("https://companistawebtesting.azurewebsites.net/Token");
+            var auth = new OAuth2PasswordCredentialsAuthenticator(tokenEndpoint);
+            auth.SetCredentials("Bill", "Abc_123");
 
-            if(result.IsAuthenticated)
-                Assert.IsNotNull(result.Token);
+            Assert.IsTrue(auth.Fields.Count > 1);
+        }
+
+        [TestMethod]
+        public void ExceptionMessageIsNotNull()
+        {
+            var auth = new OAuth2PasswordCredentialsAuthenticator(new Uri("https://Google.com"));
+            auth.SetCredentials("Bill", "Abc_123");
+
+            var completeFired = false;
+            var message = string.Empty;
+
+            auth.Error += (obj, args) =>
+            {
+                completeFired = true;
+                message = args.Message;
+            };
+
+            var account = auth.SignInAsync().Result;
+
+            Assert.IsTrue(completeFired);
+            Assert.IsNotNull(message);
         }
     }
 }
