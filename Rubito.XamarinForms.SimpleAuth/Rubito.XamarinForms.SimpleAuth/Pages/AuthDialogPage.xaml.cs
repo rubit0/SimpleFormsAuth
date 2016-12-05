@@ -31,7 +31,6 @@ namespace Rubito.XamarinForms.SimpleAuth.Pages
 
             //TODO Add Register button
 
-            Device.OnPlatform(iOS: () => HeroIcon.TranslationY -= 24);
             _behaviour = ControllerBag.GetBehaviour<AuthenticationBehaviour>();
         }
 

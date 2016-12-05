@@ -9,7 +9,7 @@
     <RelativeLayout x:Name="Top" BackgroundColor="#69D2E7"
                     RelativeLayout.HeightConstraint="{ConstraintExpression Type=RelativeToParent,
                                         Property=Height,
-                                        Factor=0.4}">
+                                        Factor=0.5}">
       <RelativeLayout.Behaviors>
         <behaviours:TopGroupBehaviour Title="{x:Reference HeaderTitle}"
               TitleLabel="{x:Reference HeaderMessage}"
@@ -28,11 +28,11 @@
         ElementName=Top, 
         Factor=0.5, 
         Constant=-18}" />
-      <Image x:Name="CloseIcon" WidthRequest="32" HeightRequest="32" MinimumWidthRequest="18" MinimumHeightRequest="18"
+      <Image x:Name="CloseIcon" WidthRequest="28" HeightRequest="28"
              RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Height,
-             Factor=0.05}"
+             Factor=0.02}"
              RelativeLayout.XConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Width,
@@ -45,25 +45,23 @@
              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Width,
-             Factor=1,
-             }"
+             Factor=1}"
              RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Height,
-             Factor=0.05}"
+             Factor=0.025}"
              Text="Authenticate" />
 
       <Image AnchorY="0.13" HeightRequest="160" WidthRequest="160" x:Name="HeroIcon"
              RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Height,
-             Factor=0.25}"
+             Factor=0.37}"
 
              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Width,
-             Factor=1,
-             }" />
+             Factor=1}" />
 
       <Label x:Name="HeaderMessage" TextColor="White" FontSize="18" HorizontalOptions="Center"
              RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToView,
@@ -74,8 +72,7 @@
              RelativeLayout.YConstraint="{ConstraintExpression Type=RelativeToView,
              ElementName=Top,
              Property=Height,
-             Factor=1,
-             Constant=-40}"
+             Factor=0.875}"
              Text="Sign in to your account" />
 
     </RelativeLayout>
@@ -94,18 +91,18 @@
 
       <StackLayout
           RelativeLayout.WidthConstraint="{ConstraintExpression Type=RelativeToParent, Property=Width, Factor=1}">
-        <Label x:Name="ErrorMessage" IsVisible="False" TextColor="#FF3939" Text="Wrong username or password" />
+        <Label FontSize="Small" x:Name="ErrorMessage" IsVisible="False" TextColor="#FF3939" Text="Wrong username or password" />
 
         <StackLayout x:Name="InputEntryContainer" />
 
-        <StackLayout Padding="0, 15, 0, 0" Orientation="Horizontal">
+        <StackLayout Padding="0, 5, 0, 0" Orientation="Horizontal">
           <ContentView VerticalOptions="Center" WidthRequest="120">
             <Label Text="Remember me" />
           </ContentView>
           <Switch x:Name="InputRememberMe" HorizontalOptions="EndAndExpand" IsToggled="True" />
         </StackLayout>
 
-        <ContentView Padding="0, 40, 0, 10">
+        <ContentView Padding="0, 10, 0, 0">
           <Button x:Name="LoginButton" WidthRequest="120" Clicked="OnSubmitClicked" BackgroundColor="#F5F87A"
                   Text="Log in" />
         </ContentView>

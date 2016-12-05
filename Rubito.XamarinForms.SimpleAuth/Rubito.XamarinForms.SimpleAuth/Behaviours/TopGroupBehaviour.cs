@@ -36,6 +36,16 @@ namespace Rubito.XamarinForms.SimpleAuth.Behaviours
             CloseIcon.Source = _closeIconImage;
             TopIcon.Opacity = 0;
             TopIcon.Source = _heroImageDefault;
+            TopIcon.TranslationY -= TopIcon.HeightRequest * 0.25;
+
+            Device.OnPlatform(Android: () =>
+            {
+            },
+            iOS: () =>
+            {
+                CloseIcon.TranslationY += 21;
+                Title.TranslationY += 21;
+            });
 
             await Task.Delay(delay);
 
