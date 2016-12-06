@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Rubito.SimpleFormsAuth</id>
+    <version>1.0.0</version>
+    <title>Rubito.SimpleFormsAuth</title>
+    <authors>Ruben de la Torre</authors>
+    <owners>Ruben de la Torre</owners>
+    <licenseUrl>https://github.com/rubit0/SimpleFormsAuth/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/rubit0/SimpleFormsAuth</projectUrl>
+    <iconUrl>https://cloud.githubusercontent.com/assets/14140857/20946450/fdfbcf14-bc0a-11e6-8683-1d2af7ec17f3.png</iconUrl>
+    <description>Simple OAuth2 password credentials authenticator for Xamarin Forms with build-in login dialog.</description>
+    <releaseNotes>Init release on NuGet.</releaseNotes>
+    <copyright>Copyright 2016</copyright>
+    <tags>OAuth Xamarin Forms XamarinForms</tags>
+  </metadata>
+</package>

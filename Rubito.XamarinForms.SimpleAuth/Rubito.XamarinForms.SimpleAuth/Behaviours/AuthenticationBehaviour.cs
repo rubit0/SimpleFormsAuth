@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace Rubito.SimpleFormsAuth.Behaviours
 {
-    public class AuthenticationBehaviour : Behavior<View>
+    internal class AuthenticationBehaviour : Behavior<View>
     {
         public enum AuthState
         {

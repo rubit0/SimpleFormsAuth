@@ -4,7 +4,7 @@ using Xamarin.Forms;
 
 namespace Rubito.SimpleFormsAuth.Tools
 {
-    public static class Extensions
+    internal static class Extensions
     {
         public static T GetBehaviour<T>(this View view) where T : Behavior<View>
         {

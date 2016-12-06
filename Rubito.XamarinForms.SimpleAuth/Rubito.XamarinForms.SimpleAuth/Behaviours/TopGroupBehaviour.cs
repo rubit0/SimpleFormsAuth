@@ -3,7 +3,7 @@ using Xamarin.Forms;
 
 namespace Rubito.SimpleFormsAuth.Behaviours
 {
-    public class TopGroupBehaviour : Behavior<View>
+    internal class TopGroupBehaviour : Behavior<View>
     {
         public Label Title { get; set; }
         public Label TitleLabel { get; set; }
@@ -18,9 +18,9 @@ namespace Rubito.SimpleFormsAuth.Behaviours
 
         public TopGroupBehaviour()
         {
-            _closeIconImage = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.close_modal.png");
-            _heroImageDefault = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.header.png");
-            _heroImageSucces = ImageSource.FromResource("Rubito.XamarinForms.SimpleAuth.Assets.verified.png");
+            _closeIconImage = ImageSource.FromResource("Rubito.SimpleFormsAuth.Assets.close_modal.png");
+            _heroImageDefault = ImageSource.FromResource("Rubito.SimpleFormsAuth.Assets.header.png");
+            _heroImageSucces = ImageSource.FromResource("Rubito.SimpleFormsAuth.Assets.verified.png");
         }
 
         protected override void OnAttachedTo(View bindable)

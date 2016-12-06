@@ -9,7 +9,7 @@ namespace Rubito.SimpleFormsAuth.Behaviours
         Tuple<bool, string> Validate();
     }
 
-    public class EntrySanityBehaviour : Behavior<Entry>, IEntryValidator
+    internal class EntrySanityBehaviour : Behavior<Entry>, IEntryValidator
     {
         public bool FailOnEmtpyEntry { get; set; } = true;
         public bool CheckIsEmail { get; set; } = false;
