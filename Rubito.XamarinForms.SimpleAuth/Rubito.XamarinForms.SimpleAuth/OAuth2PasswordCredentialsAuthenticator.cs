@@ -1,16 +1,16 @@
-﻿using ModernHttpClient;
-using Rubito.XamarinForms.SimpleAuth.Pages;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using ModernHttpClient;
+using Rubito.SimpleFormsAuth.Pages;
 using Xamarin.Auth;
 using Xamarin.Forms;
 using Xamarin.Utilities;
 
-namespace Rubito.XamarinForms.SimpleAuth
+namespace Rubito.SimpleFormsAuth
 {
     public class OAuth2PasswordCredentialsAuthenticator : FormAuthenticator
     {

@@ -2,7 +2,7 @@
 using System.Text.RegularExpressions;
 using Xamarin.Forms;
 
-namespace Rubito.XamarinForms.SimpleAuth.Behaviours
+namespace Rubito.SimpleFormsAuth.Behaviours
 {
     public interface IEntryValidator
     {

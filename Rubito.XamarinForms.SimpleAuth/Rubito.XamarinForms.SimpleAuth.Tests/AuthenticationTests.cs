@@ -1,7 +1,7 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System;
+﻿using System;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Rubito.XamarinForms.SimpleAuth.Tests
+namespace Rubito.SimpleFormsAuth.Tests
 {
     [TestClass]
     public class AuthenticationTests

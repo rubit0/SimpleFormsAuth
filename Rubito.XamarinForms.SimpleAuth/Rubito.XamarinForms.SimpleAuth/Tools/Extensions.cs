@@ -2,7 +2,7 @@
 using System.Linq;
 using Xamarin.Forms;
 
-namespace Rubito.XamarinForms.SimpleAuth.Tools
+namespace Rubito.SimpleFormsAuth.Tools
 {
     public static class Extensions
     {

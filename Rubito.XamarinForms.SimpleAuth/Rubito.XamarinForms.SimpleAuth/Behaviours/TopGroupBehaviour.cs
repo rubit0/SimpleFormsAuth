@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Xamarin.Forms;
 
-namespace Rubito.XamarinForms.SimpleAuth.Behaviours
+namespace Rubito.SimpleFormsAuth.Behaviours
 {
     public class TopGroupBehaviour : Behavior<View>
     {

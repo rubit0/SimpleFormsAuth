@@ -1,13 +1,13 @@
-﻿using Rubito.XamarinForms.SimpleAuth.Behaviours;
-using Rubito.XamarinForms.SimpleAuth.Tools;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Rubito.SimpleFormsAuth.Behaviours;
+using Rubito.SimpleFormsAuth.Tools;
 using Xamarin.Auth;
 using Xamarin.Forms;
 
-namespace Rubito.XamarinForms.SimpleAuth.Pages
+namespace Rubito.SimpleFormsAuth.Pages
 {
     public partial class AuthDialogPage : ContentPage
     {

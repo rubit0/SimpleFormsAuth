@@ -3,7 +3,7 @@
 <ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:behaviours="clr-namespace:Rubito.XamarinForms.SimpleAuth.Behaviours;assembly=Rubito.XamarinForms.SimpleAuth"
-             x:Class="Rubito.XamarinForms.SimpleAuth.Pages.AuthDialogPage"
+             x:Class="Rubito.SimpleFormsAuth.Pages.AuthDialogPage"
              Title="Authenticate">
   <RelativeLayout>
     <RelativeLayout x:Name="Top" BackgroundColor="#69D2E7"

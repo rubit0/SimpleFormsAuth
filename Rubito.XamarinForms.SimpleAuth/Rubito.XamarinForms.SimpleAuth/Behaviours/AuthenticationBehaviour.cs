@@ -1,8 +1,8 @@
-﻿using Rubito.XamarinForms.SimpleAuth.Tools;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
+using Rubito.SimpleFormsAuth.Tools;
 using Xamarin.Forms;
 
-namespace Rubito.XamarinForms.SimpleAuth.Behaviours
+namespace Rubito.SimpleFormsAuth.Behaviours
 {
     public class AuthenticationBehaviour : Behavior<View>
     {

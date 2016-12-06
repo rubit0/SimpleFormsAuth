@@ -6,8 +6,8 @@
     <ProjectGuid>{BC6840F7-7E98-43FA-9E5D-20F1A806347C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Rubito.XamarinForms.SimpleAuth.Tests</RootNamespace>
-    <AssemblyName>Rubito.XamarinForms.SimpleAuth.Tests</AssemblyName>
+    <RootNamespace>Rubito.SimpleFormsAuth.Tests</RootNamespace>
+    <AssemblyName>Rubito.SimpleFormsAuth.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -77,9 +77,9 @@
     <Compile Include="AuthenticationTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Rubito.XamarinForms.SimpleAuth\Rubito.XamarinForms.SimpleAuth.csproj">
+    <ProjectReference Include="..\Rubito.XamarinForms.SimpleAuth\Rubito.SimpleFormsAuth.csproj">
       <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
-      <Name>Rubito.XamarinForms.SimpleAuth</Name>
+      <Name>Rubito.SimpleFormsAuth</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
