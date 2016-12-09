@@ -1,6 +1,11 @@
 # ![SimpleAuth](https://cloud.githubusercontent.com/assets/14140857/20651868/da1bd19e-b4ed-11e6-8ea4-a8065b89b576.png)
 Simple oAuth2 password credentials authenticator for Xamarin Forms with build-in login dialog.
 
+# Installation
+Just fetch it from your nuget package manager:
+
+``PM> Install-Package Rubito.SimpleFormsAuth``
+
 # Usage
 SimpleAuth is designed to be simple, so let the code speak for itself:
 
