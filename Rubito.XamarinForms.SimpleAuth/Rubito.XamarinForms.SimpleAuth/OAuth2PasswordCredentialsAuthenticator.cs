@@ -1,11 +1,11 @@
-﻿using System;
+﻿using ModernHttpClient;
+using Rubito.SimpleFormsAuth.Pages;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using ModernHttpClient;
-using Rubito.SimpleFormsAuth.Pages;
 using Xamarin.Auth;
 using Xamarin.Forms;
 using Xamarin.Utilities;
@@ -158,10 +158,11 @@ namespace Rubito.SimpleFormsAuth
         /// Present this with love cradted page to your user as a modal page.
         /// Please note that this page closes it-self on a successful authentication.
         /// </summary>
+        /// <param name="configuration">Optionally pass a configuration for the page</param>
         /// <returns>The authentication dialog page.</returns>
-        public virtual ContentPage GetFormsUI()
+        public virtual ContentPage GetFormsUI(AuthPageConfiguration configuration = null)
         {
-            return new AuthDialogPage(this);
+            return new AuthDialogPage(this, configuration);
         }
 
         protected async Task<IDictionary<string, string>> RequestAccessTokenAsync(CancellationToken cancellationToken)

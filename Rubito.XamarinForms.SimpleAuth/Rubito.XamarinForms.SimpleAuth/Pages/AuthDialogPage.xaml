@@ -106,6 +106,11 @@
           <Button x:Name="LoginButton" WidthRequest="120" Clicked="OnSubmitClicked" BackgroundColor="#F5F87A"
                   Text="Log in" />
         </ContentView>
+        <ContentView Padding="0, 10, 0, 0">
+          <Button x:Name="RegistrationButton" WidthRequest="120" BackgroundColor="#7ADBF8"
+                  IsEnabled="False"
+                  Text="Register" />
+        </ContentView>
         <ActivityIndicator x:Name="LoadingIndicator" IsRunning="False" />
       
     </StackLayout>

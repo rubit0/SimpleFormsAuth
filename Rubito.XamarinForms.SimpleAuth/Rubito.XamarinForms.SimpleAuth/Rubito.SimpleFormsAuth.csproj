@@ -35,6 +35,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="AuthPageConfiguration.cs" />
     <Compile Include="Behaviours\AuthenticationBehaviour.cs" />
     <Compile Include="Behaviours\EntrySanityBehaviour.cs" />
     <Compile Include="Behaviours\TopGroupBehaviour.cs" />
