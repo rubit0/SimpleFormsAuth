@@ -39,6 +39,7 @@
     <Compile Include="Behaviours\AuthenticationBehaviour.cs" />
     <Compile Include="Behaviours\EntrySanityBehaviour.cs" />
     <Compile Include="Behaviours\TopGroupBehaviour.cs" />
+    <Compile Include="OAuth2BearerRequest.cs" />
     <Compile Include="OAuth2PasswordCredentialsAuthenticator.cs" />
     <Compile Include="Pages\AuthDialogPage.xaml.cs">
       <DependentUpon>AuthDialogPage.xaml</DependentUpon>

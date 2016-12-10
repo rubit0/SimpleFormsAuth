@@ -1,13 +1,13 @@
 # ![SimpleAuth](https://cloud.githubusercontent.com/assets/14140857/20651868/da1bd19e-b4ed-11e6-8ea4-a8065b89b576.png)
-Simple oAuth2 password credentials authenticator for Xamarin Forms with build-in login dialog.
+Simple OAuth2 password credentials authenticator for Xamarin Forms based on [Xamarin.Auth](https://github.com/xamarin/Xamarin.Auth/) with an customizable login dialog.
 
 # Installation
-Just fetch it from your nuget package manager:
+Get it via NuGet:
 
 ``PM> Install-Package Rubito.SimpleFormsAuth``
 
 # Usage
-SimpleAuth is designed to be simple, so let the code speak for itself:
+SimpleAuth is designed to be simple, so let's the code speak for itself:
 
 ```csharp
 //set endpoint and create an new authenticator instance
@@ -26,7 +26,7 @@ authenticator.Complete += (obj, args) => {
 //get the dialog page
 var page = authenticator.GetFormsUI();
 
-//let the auth dialog page do it's wonderful work
+//present the auth dialog page to the user the way you like
 await Navigation.PushModalAsync(page);
 ```
 And now you get this lovely dialog page:
@@ -60,13 +60,22 @@ await authenticator.SignInAsync(new CancellationToken());
 ```
 
 # Account
-You can find on [Xamarin.Auth's GitHub page](https://github.com/xamarin/Xamarin.Auth/blob/master/GettingStarted.md) further usage instructions.
+The Account contains all relevant data to make authenticated requests.
+Furthermore Xamarin.Auth provides persistance via the [Account.Store](https://github.com/xamarin/Xamarin.Auth/blob/master/GettingStarted.md) object.
 
-# Depencys
-You will need Xamarin.Auth, available as nuget package.
+# Requests
+To make requests use the provided OAuth2BearerRequest object.
+```csharp
+//create request instance with HTTP verb, endpoint and the account object
+var endpoint = new Uri("https://domain.com/api/endpoint");
+var request = new OAuth2BearerRequest("GET", endpoint, null, account);
+
+//await response
+var response = await request.GetResponseAsync();
+var text = response.GetResponseText();
+```
 
 # Limitations
-Currently there is only support for oAuth2 based password-credentials authentication.
-Also the AuthDialogPage only supports high-dpi displays in portrait mode properly.
+The AuthDialogPage only supports Android and iOS in portrait mode.
 
 For more information, please take a a look at the [Issues](https://github.com/rubit0/XamarinForms.SimpleAuth/issues) section.
