@@ -42,7 +42,7 @@ namespace Rubito.SimpleFormsAuth.Pages
         {
             HeaderTitle.Text = _authPageConfiguration.Title;
             HeaderMessage.Text = _authPageConfiguration.SubTitle;
-            CloseIcon.IsEnabled = _authPageConfiguration.ShowCloseButton;
+            CloseIcon.IsVisible = _authPageConfiguration.ShowCloseButton;
             RegistrationButton.IsVisible = _authPageConfiguration.ShowRegistrationButton;
         }
 
@@ -141,7 +141,7 @@ namespace Rubito.SimpleFormsAuth.Pages
                 {
                     case FormAuthenticatorFieldType.PlainText:
                         if (field.Key == "username")
-                            behaviour.MinCharLength = _authPageConfiguration.MinPasswordLength;
+                            behaviour.MinCharLength = _authPageConfiguration.MinUsernameLength;
 
                         entry.Keyboard = Keyboard.Text;
                         break;
