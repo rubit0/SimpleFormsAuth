@@ -133,7 +133,8 @@ namespace Rubito.SimpleFormsAuth
 
                 if (result.ContainsKey("access_token"))
                 {
-                    var account = new Account(result["userName"], result);
+                    var accountName = result.ContainsKey("userName") ? result["userName"] : GetFieldValue("username");
+                    var account = new Account(accountName, result);
                     OnSucceeded(account);
                     return account;
                 }
