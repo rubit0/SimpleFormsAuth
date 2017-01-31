@@ -1,5 +1,8 @@
-﻿using System;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
+using System;
+using System.Collections.Generic;
+using Xamarin.Auth;
 
 namespace Rubito.SimpleFormsAuth.Tests
 {
@@ -47,6 +50,26 @@ namespace Rubito.SimpleFormsAuth.Tests
             Assert.IsTrue(auth.HasCompleted);
             Assert.IsTrue(completeFired);
             Assert.IsNotNull(account);
+        }
+
+        [TestMethod]
+        public void RequestBodyIsNotNull()
+        {
+            var account = new Account
+            {
+                Username = "anybody",
+                Properties = { { "token", "123456789" } }
+            };
+            var request = new OAuth2BearerRequest("GET", new Uri("http://www.google.com/"), null, account);
+
+            var testData = new Dictionary<string, string>
+            {
+                { "key", "value" }
+            };
+            var requestBody = JsonConvert.SerializeObject(testData);
+            request.SetRequestBody(requestBody);
+
+            Assert.IsNotNull(request.RequestBodyContent);
         }
 
         [TestMethod]
